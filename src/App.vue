@@ -1,26 +1,45 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="container">
+    <DiscgolfRound />
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import DiscgolfRound from './components/DiscgolfRound.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    DiscgolfRound
   }
 }
 </script>
 
 <style>
+:root {
+  --col-white: hsl(160, 100%, 99%);
+  --col-gray: hsl(0, 0%, 80%);
+  --col-gray-light: hsl(0, 0%, 94%);
+  --col-primary: hsla(157, 77%, 24%, 1);
+}
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
 #app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5vmin;
+  text-align: center;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+.container{
+  max-width: 1024px;
 }
 </style>
