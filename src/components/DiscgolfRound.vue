@@ -4,8 +4,8 @@
     <div class="settings-content">
       <div>
         <label for="input-competition">Võistlus <small>(Metrixi ID)</small></label>
-        <input type="text" value="hetkel ei funga veel" placeholder="Metrixi ID" id="input-competition" />
-        <br><button>MUUDA</button>
+        <input type="text" v-model="eventInput" placeholder="Metrixi ID" id="input-competition" />
+        <button  @click="setEvent">MUUDA</button>
       </div>
       <div>
         <label for="input-players">Mängijad <small>(eralda komadega)</small></label>
@@ -26,7 +26,7 @@
     </template>
   </div>
   <div>
-    <button class="button" @click="fetchData" v-if="dudesData">Uuenda</button>
+    <button class="button" @click="fetchData" v-if="eventInput && dudesInput">Uuenda</button>
   </div>
   <div class="timestamp">Viimased andmed: {{lastUpdate}}</div>
 </template>
@@ -38,23 +38,23 @@ import Player from './Player.vue'
 
 export default {
   name: 'DiscgolfRound',
-  props: {
-    id: String
-  },
   components: {
     Player
   },
   setup(){
-    const query = "https://discgolfmetrix.com/api.php?content=result&id=1915436";
     const event = ref(null);
+    const eventInput = ref(null);
     const dudes = ref(null);
     const dudesData = ref(null);
     const dudesInput = ref(null);
     const lastUpdate = ref("")
+    const query = ref(null);
 
     const fetchData = async () => {
+      query.value = `https://discgolfmetrix.com/api.php?content=result&id=${eventInput.value}`;
+      // query.value = `https://discgolfmetrix.com/api.php?content=result&id=1915436`;
       try {
-        await fetch(query)
+        await fetch(query.value)
           .then(response => response.json())
           .then(data => {
             event.value = data;
@@ -67,7 +67,7 @@ export default {
         });
       } catch (e) {
         //error.value = e;
-        console.error("Nahhui, datat ei tule ju?!?");
+        console.error("Nahhui, datat ei tule ju?!?", query.value);
       }
     };
 
@@ -75,22 +75,38 @@ export default {
       return arr.some(arrVal => val.toUpperCase() === arrVal.toUpperCase());
     }
 
+    function getEvent() {
+      // console.log("getDudes", localStorage.getItem("savedDudes"));
+      eventInput.value = localStorage.getItem("savedEvent");
+      // dudes.value = localStorage.getItem("savedDudes").split(", ");
+    }
+    function setEvent() { 
+      localStorage.setItem("savedEvent", eventInput.value);
+      // console.log("setDudes" + localStorage.getItem("savedDudes"));
+      // dudes.value = localStorage.getItem("savedDudes").split(", ");
+      fetchData();
+    }
     function getDudes() {
-      console.log("getDudes", localStorage.getItem("savedDudes"));
+      // console.log("getDudes", localStorage.getItem("savedDudes"));
       dudesInput.value = localStorage.getItem("savedDudes");
       dudes.value = localStorage.getItem("savedDudes").split(", ");
     }
     function setDudes() { 
       localStorage.setItem("savedDudes", dudesInput.value);
-      console.log("setDudes" + localStorage.getItem("savedDudes"));
+      // console.log("setDudes" + localStorage.getItem("savedDudes"));
       dudes.value = localStorage.getItem("savedDudes").split(", ");
       fetchData();
     }
 
-    onMounted( getDudes );
+    function getStuffReady(){
+      getEvent();
+      getDudes();
+    }
+
+    onMounted( getStuffReady );
 
     return {
-      event, 
+      event, setEvent, eventInput,
       dudes, dudesData, dudesInput, setDudes, getDudes, 
       fetchData, lastUpdate
     }
@@ -147,5 +163,9 @@ export default {
   .settings summary {
     padding: 1rem;
     background: var(--col-gray-light);
+  }
+  .settings button {
+    display: block;
+    margin-top: 0.5rem;
   }
 </style>
