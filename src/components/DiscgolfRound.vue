@@ -17,7 +17,7 @@
     
   <div v-if="event" class="events">
     <h1>💩</h1>
-    <h2>{{event.Competition.Name}}</h2>
+    <h2 v-html="event.Competition.Name"></h2>
     <h4><i>MEIE TÜÜPIDE VIRTUAALNE TABEL</i></h4>
     <template v-if="dudesData">
       <div v-for="(d, key) in dudesData" :key="'k' + key">
@@ -58,12 +58,14 @@ export default {
           .then(response => response.json())
           .then(data => {
             event.value = data;
+            lastUpdate.value = new Date().toString();
+            // console.log("siin on ok");
+            
             dudesData.value = data.Competition.TourResults.filter(
               player => findNames( dudes.value, player.Name)
-            ).sort(function (a, b) {
-              return a.Total - b.Total;
-            });
-            lastUpdate.value = new Date().toString();
+              ).sort(function (a, b) {
+                return a.Total - b.Total;
+              });
         });
       } catch (e) {
         //error.value = e;
